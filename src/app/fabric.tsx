@@ -2,34 +2,37 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  FABRIC_OPTIONS,
+  selectFabric as getSelectedFabric,
+} from "../utils/fabricOptions";
 import { useAnalysis } from "../viewmodels/AnalysisViewModel";
 
 export default function FabricSelection() {
-  const fabrics = ["WOOL", "SILK", "COTTON", "POLYESTER", "LINEN"];
-  const { setSelectedFabric } = useAnalysis();
+  const { selectedFabric, setSelectedFabric } = useAnalysis();
 
-  const selectFabric = (fabric: string) => {
-    setSelectedFabric(fabric);
+  const handleFabricSelection = (fabric: string) => {
+    const newFabric = getSelectedFabric(selectedFabric, fabric);
+
+    setSelectedFabric(newFabric);
     router.back();
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.container}>
-        {/* HEADER */}
         <View style={styles.header}>
           <Text style={styles.brand}>Maxwells</Text>
           <Text style={styles.brandSmall}>Drycleaning</Text>
           <Text style={styles.appTitle}>Stain Detector</Text>
         </View>
 
-        {/* FABRIC OPTIONS */}
         <View style={styles.fabricContainer}>
-          {fabrics.map((fabric) => (
+          {FABRIC_OPTIONS.map((fabric) => (
             <TouchableOpacity
               key={fabric}
               style={styles.fabricButton}
-              onPress={() => selectFabric(fabric)}
+              onPress={() => handleFabricSelection(fabric)}
             >
               <Text style={styles.fabricText}>{fabric}</Text>
             </TouchableOpacity>

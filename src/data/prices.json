@@ -1,0 +1,25 @@
+{
+  "lastUpdated": "2025-03-17",
+  "currency": "NZD",
+  "garments": {
+    "Shirt": {
+      "STANDARD": 8,
+      "LINEN": 12.5
+    },
+    "Jacket": {
+      "STANDARD": 23,
+      "LINEN": 25,
+      "WOOL": 28
+    },
+    "Dress": {
+      "STANDARD": 35,
+      "LINEN": 40,
+      "SILK": 45
+    },
+    "Trousers": {
+      "STANDARD": 20,
+      "LINEN": 22,
+      "SILK": 24.5
+    }
+  }
+}

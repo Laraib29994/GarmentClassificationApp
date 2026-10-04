@@ -11,6 +11,8 @@ import {
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { createClassificationResult } from "../utils/classificationUtils";
+import { validateAnalysis } from "../utils/validateAnalysis";
 import { useAnalysis } from "../viewmodels/AnalysisViewModel";
 
 export default function Index() {
@@ -22,6 +24,7 @@ export default function Index() {
     selectedFabric,
     setGarmentImage,
     setStainImage,
+    setClassificationResult,
   } = useAnalysis();
 
   // Upload image from phone gallery
@@ -80,6 +83,27 @@ export default function Index() {
         setStainImage(imageUri);
       }
     }
+  };
+
+  const analyseImages = () => {
+    const validationError = validateAnalysis(
+      garmentImage,
+      stainImage,
+      selectedFabric,
+    );
+
+    if (validationError) {
+      Alert.alert("Missing Information", validationError);
+      return;
+    }
+
+    // Temporary classification results
+    // Will be replaced with ML model predictions later
+    const result = createClassificationResult("Shirt", 92, "Coffee", 87);
+
+    setClassificationResult(result);
+
+    router.push("/confirmation");
   };
 
   return (
@@ -187,7 +211,7 @@ export default function Index() {
         )}
 
         {/* ANALYSE BUTTON */}
-        <TouchableOpacity style={styles.analyseButton}>
+        <TouchableOpacity style={styles.analyseButton} onPress={analyseImages}>
           <Text style={styles.analyseText}>ANALYSE</Text>
         </TouchableOpacity>
       </View>
