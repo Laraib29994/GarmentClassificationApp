@@ -9,25 +9,25 @@ Before running the project, make sure the following are installed:
 - [Node.js](https://nodejs.org/)
 - [Visual Studio Code](https://code.visualstudio.com/)
 - [Expo Go](https://expo.dev/go) on an Android or iOS device
-- Git (optional, for cloning the repository)
+- [Git](https://git-scm.com/) (for cloning the repository)
 
 ## How to Run the Project
 
 ### Step 1: Download the Project
 
-Clone the GitHub repository:
+Clone the GitHub repository using the following command:
 
 ```bash
-git clone <REPOSITORY_URL>
+git clone https://github.com/Laraib29994/GarmentClassificationApp.git
 ```
 
-Alternatively, select Code → Download ZIP on GitHub and extract the folder.
+Alternatively, open the [GitHub repository](https://github.com/Laraib29994/GarmentClassificationApp) and select Code -> Download ZIP, then extract the folder.
 
 ### Step 2: Open in VS Code
 
-Open the downloaded project folder in Visual Studio Code.
+Open the downloaded `GarmentClassificationApp` folder in Visual Studio Code.
 
-Open a new terminal using Terminal → New Terminal.
+Open a terminal using Terminal → New Terminal.
 
 ### Step 3: Install Dependencies
 
@@ -64,7 +64,7 @@ npx expo start --tunnel
 
 ## Running Tests
 
-To run the Jest unit tests, open the project terminal and execute:
+To run the Jest unit tests, execute:
 
 ```bash
 npm test
