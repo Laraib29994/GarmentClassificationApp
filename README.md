@@ -1,56 +1,75 @@
-# Welcome to your Expo app 👋
+# Mobile Garment & Stain Classification System
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A mobile application prototype developed for Maxwells Drycleaning using React Native, Expo and TypeScript.
 
-## Get started
+## Requirements
 
-1. Install dependencies
+Before running the project, make sure the following are installed:
 
-   ```bash
-   npm install
-   ```
+- [Node.js](https://nodejs.org/)
+- [Visual Studio Code](https://code.visualstudio.com/)
+- [Expo Go](https://expo.dev/go) on an Android or iOS device
+- Git (optional, for cloning the repository)
 
-2. Start the app
+## How to Run the Project
 
-   ```bash
-   npx expo start
-   ```
+### Step 1: Download the Project
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+Clone the GitHub repository:
 
 ```bash
-npm run reset-project
+git clone <REPOSITORY_URL>
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Alternatively, select Code → Download ZIP on GitHub and extract the folder.
 
-### Other setup steps
+### Step 2: Open in VS Code
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+Open the downloaded project folder in Visual Studio Code.
 
-## Learn more
+Open a new terminal using Terminal → New Terminal.
 
-To learn more about developing your project with Expo, look at the following resources:
+### Step 3: Install Dependencies
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Run the following command:
 
-## Join the community
+```bash
+npm install
+```
 
-Join our community of developers creating universal apps.
+This installs the required project dependencies.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+### Step 4: Start the Application
+
+Run:
+
+```bash
+npx expo start
+```
+
+A QR code will appear in the terminal.
+
+### Step 5: Run on a Mobile Device
+
+1. Install and open Expo Go on your phone.
+2. Connect your phone and computer to the same Wi-Fi network.
+3. Scan the QR code displayed in the terminal.
+4. Wait for the application to load.
+
+If the connection fails, try:
+
+```bash
+npx expo start --tunnel
+```
+
+## Running Tests
+
+To run the Jest unit tests, open the project terminal and execute:
+
+```bash
+npm test
+```
+
+## Note
+
+The current application uses mock garment and stain classifications. A machine-learning model has not yet been integrated.
