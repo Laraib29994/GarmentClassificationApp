@@ -1,6 +1,7 @@
 import {
   Alert,
   Image,
+  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -10,14 +11,22 @@ import {
 
 import * as ImagePicker from "expo-image-picker";
 import { router } from "expo-router";
+import { useEffect, useState } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
+
+import {
+  loadGarmentModel,
+  runGarmentInference,
+} from "../services/GarmentClassifier";
+
+import { preprocessGarmentImage } from "../services/ImagePreprocessor";
+import { logPerformance } from "../services/PerformanceLogger";
 import { createClassificationResult } from "../utils/classificationUtils";
 import { validateAnalysis } from "../utils/validateAnalysis";
 import { useAnalysis } from "../viewmodels/AnalysisViewModel";
 
 export default function Index() {
-  // Get selected fabric from fabric screen
-  // Store garment and stain images
+  // STORES THE SELECTED IMAGES AND FABRIC
   const {
     garmentImage,
     stainImage,
@@ -27,8 +36,28 @@ export default function Index() {
     setClassificationResult,
   } = useAnalysis();
 
-  // Upload image from phone gallery
+  // TRACKS THE ANALYSIS STATUS
+  const [isAnalysing, setIsAnalysing] = useState(false);
+
+  useEffect(() => {
+    // LOADS THE GARMENT MODEL WHEN THE SCREEN OPENS
+    const initialiseModel = async () => {
+      try {
+        const session = await loadGarmentModel();
+
+        console.log("Garment model loaded successfully!");
+        console.log("Model inputs:", session.inputNames);
+        console.log("Model outputs:", session.outputNames);
+      } catch (error) {
+        console.error("Failed to load garment model:", error);
+      }
+    };
+
+    initialiseModel();
+  }, []);
+
   const uploadImage = async (imageType: "garment" | "stain") => {
+    // REQUESTS PHOTO LIBRARY PERMISSION
     const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
 
     if (!permission.granted) {
@@ -39,13 +68,15 @@ export default function Index() {
       return;
     }
 
+    // OPENS THE PHONE GALLERY
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ["images"],
       allowsEditing: false,
       quality: 1,
     });
 
-    if (!result.canceled) {
+    // STORES THE SELECTED IMAGE
+    if (!result.canceled && result.assets.length > 0) {
       const imageUri = result.assets[0].uri;
 
       if (imageType === "garment") {
@@ -56,8 +87,8 @@ export default function Index() {
     }
   };
 
-  // Take image using phone camera
   const openCamera = async (imageType: "garment" | "stain") => {
+    // REQUESTS CAMERA PERMISSION
     const permission = await ImagePicker.requestCameraPermissionsAsync();
 
     if (!permission.granted) {
@@ -68,13 +99,15 @@ export default function Index() {
       return;
     }
 
+    // OPENS THE PHONE CAMERA
     const result = await ImagePicker.launchCameraAsync({
       mediaTypes: ["images"],
       allowsEditing: false,
       quality: 1,
     });
 
-    if (!result.canceled) {
+    // STORES THE CAPTURED IMAGE
+    if (!result.canceled && result.assets.length > 0) {
       const imageUri = result.assets[0].uri;
 
       if (imageType === "garment") {
@@ -85,7 +118,13 @@ export default function Index() {
     }
   };
 
-  const analyseImages = () => {
+  const analyseImages = async () => {
+    // PREVENTS MULTIPLE SIMULTANEOUS ANALYSES
+    if (isAnalysing) {
+      return;
+    }
+
+    // VALIDATES THE REQUIRED ANALYSIS INPUTS
     const validationError = validateAnalysis(
       garmentImage,
       stainImage,
@@ -97,20 +136,89 @@ export default function Index() {
       return;
     }
 
-    // Temporary classification results
-    // Will be replaced with ML model predictions later
-    const result = createClassificationResult("Shirt", 92, "Coffee", 87);
+    // STARTS THE PERFORMANCE MEASUREMENT
+    const totalStart = performance.now();
 
-    setClassificationResult(result);
+    let preprocessingMs = 0;
+    let modelLoadMs = 0;
+    let inferenceMs = 0;
+    let status: "SUCCESS" | "FAILED" = "FAILED";
 
-    router.push("/confirmation");
+    setIsAnalysing(true);
+
+    try {
+      // MEASURES THE GARMENT PREPROCESSING TIME
+      console.log("Starting garment preprocessing...");
+
+      const preprocessingStart = performance.now();
+
+      const imageTensor = await preprocessGarmentImage(garmentImage!);
+
+      preprocessingMs = performance.now() - preprocessingStart;
+
+      console.log(
+        "Garment preprocessing time:",
+        preprocessingMs.toFixed(2),
+        "ms",
+      );
+
+      // RUNS THE GARMENT MODEL
+      const inferenceResult = await runGarmentInference(imageTensor);
+
+      // STORES THE MODEL PERFORMANCE MEASUREMENTS
+      modelLoadMs = inferenceResult.modelLoadMs;
+      inferenceMs = inferenceResult.inferenceMs;
+
+      console.log(
+        "Garment model outputs:",
+        Object.keys(inferenceResult.outputs),
+      );
+
+      // GENERATES TEMPORARY CLASSIFICATION RESULTS
+      const result = createClassificationResult("Shirt", 92, "Coffee", 87);
+
+      setClassificationResult(result);
+
+      status = "SUCCESS";
+
+      // NAVIGATES TO THE CONFIRMATION SCREEN
+      router.push("/confirmation");
+    } catch (error) {
+      console.error("Garment analysis failed:", error);
+
+      Alert.alert(
+        "Analysis Error",
+        "Unable to analyse the garment image. Please try again.",
+      );
+    } finally {
+      // MEASURES THE TOTAL PROCESSING TIME
+      const totalMs = performance.now() - totalStart;
+
+      console.log("Total analysis time:", totalMs.toFixed(2), "ms");
+
+      // SAVES THE PERFORMANCE RESULTS
+      await logPerformance({
+        timestamp: new Date().toISOString(),
+        preprocessingMs,
+        modelLoadMs,
+        inferenceMs,
+        totalMs,
+        status,
+      });
+
+      // RESETS THE ANALYSIS STATUS
+      setIsAnalysing(false);
+    }
   };
 
   return (
     <SafeAreaView style={styles.safeArea}>
       <StatusBar barStyle="light-content" />
 
-      <View style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.container}
+        keyboardShouldPersistTaps="handled"
+      >
         {/* HEADER */}
         <View style={styles.header}>
           <Text style={styles.brand}>Maxwells</Text>
@@ -147,6 +255,7 @@ export default function Index() {
           <TouchableOpacity
             style={styles.smallButton}
             onPress={() => uploadImage("garment")}
+            disabled={isAnalysing}
           >
             <Text style={styles.smallButtonText}>UPLOAD</Text>
           </TouchableOpacity>
@@ -154,6 +263,7 @@ export default function Index() {
           <TouchableOpacity
             style={styles.smallButton}
             onPress={() => openCamera("garment")}
+            disabled={isAnalysing}
           >
             <Text style={styles.smallButtonText}>OPEN CAMERA</Text>
           </TouchableOpacity>
@@ -185,6 +295,7 @@ export default function Index() {
           <TouchableOpacity
             style={styles.smallButton}
             onPress={() => uploadImage("stain")}
+            disabled={isAnalysing}
           >
             <Text style={styles.smallButtonText}>UPLOAD</Text>
           </TouchableOpacity>
@@ -192,6 +303,7 @@ export default function Index() {
           <TouchableOpacity
             style={styles.smallButton}
             onPress={() => openCamera("stain")}
+            disabled={isAnalysing}
           >
             <Text style={styles.smallButtonText}>OPEN CAMERA</Text>
           </TouchableOpacity>
@@ -201,6 +313,7 @@ export default function Index() {
         <TouchableOpacity
           style={styles.fabricButton}
           onPress={() => router.push("/fabric")}
+          disabled={isAnalysing}
         >
           <Text style={styles.buttonText}>SELECT FABRIC TYPE</Text>
         </TouchableOpacity>
@@ -211,10 +324,16 @@ export default function Index() {
         )}
 
         {/* ANALYSE BUTTON */}
-        <TouchableOpacity style={styles.analyseButton} onPress={analyseImages}>
-          <Text style={styles.analyseText}>ANALYSE</Text>
+        <TouchableOpacity
+          style={[styles.analyseButton, isAnalysing && styles.disabledButton]}
+          onPress={analyseImages}
+          disabled={isAnalysing}
+        >
+          <Text style={styles.analyseText}>
+            {isAnalysing ? "ANALYSING..." : "ANALYSE"}
+          </Text>
         </TouchableOpacity>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -225,11 +344,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#0D3B24",
   },
 
+  // SCREEN
   container: {
-    flex: 1,
+    flexGrow: 1,
     backgroundColor: "#0D3B24",
     paddingHorizontal: 22,
     paddingTop: 20,
+    paddingBottom: 24,
   },
 
   // HEADER
@@ -295,7 +416,7 @@ const styles = StyleSheet.create({
     resizeMode: "cover",
   },
 
-  // UPLOAD / CAMERA
+  // UPLOAD AND CAMERA
   buttonRow: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -353,6 +474,10 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     marginTop: 10,
     minWidth: 170,
+  },
+
+  disabledButton: {
+    opacity: 0.6,
   },
 
   analyseText: {
