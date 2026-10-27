@@ -1,5 +1,6 @@
 import type { ClassificationResult } from "../models/ClassificationResult";
 
+// CREATES A CLASSIFICATION RESULT
 export function createClassificationResult(
   garmentType: string,
   garmentConfidence: number,
@@ -14,10 +15,16 @@ export function createClassificationResult(
   };
 }
 
+// FORMATS THE CLASSIFICATION CONFIDENCE
 export function formatConfidence(confidence: number): string {
+  if (confidence === -1) {
+    return "Manually Corrected";
+  }
+
   return `${confidence}%`;
 }
 
+// VALIDATES THE CLASSIFICATION RESULT
 export function isValidClassificationResult(
   result: ClassificationResult | null,
 ): boolean {
@@ -28,19 +35,21 @@ export function isValidClassificationResult(
   return (
     result.garmentType.trim() !== "" &&
     result.stainType.trim() !== "" &&
-    result.garmentConfidence >= 0 &&
+    result.garmentConfidence >= -1 &&
     result.garmentConfidence <= 100 &&
-    result.stainConfidence >= 0 &&
+    result.stainConfidence >= -1 &&
     result.stainConfidence <= 100
   );
 }
 
+// CONFIRMS THE EXISTING CLASSIFICATION RESULT
 export function confirmClassification(
   result: ClassificationResult,
 ): ClassificationResult {
   return { ...result };
 }
 
+// CORRECTS THE GARMENT CLASSIFICATION
 export function correctGarment(
   result: ClassificationResult,
   newGarmentType: string,
@@ -48,10 +57,12 @@ export function correctGarment(
   return {
     ...result,
     garmentType: newGarmentType,
-    garmentConfidence: 100,
+    garmentConfidence:
+      newGarmentType === result.garmentType ? result.garmentConfidence : -1,
   };
 }
 
+// CORRECTS THE STAIN CLASSIFICATION
 export function correctStain(
   result: ClassificationResult,
   newStainType: string,
@@ -59,6 +70,7 @@ export function correctStain(
   return {
     ...result,
     stainType: newStainType,
-    stainConfidence: 100,
+    stainConfidence:
+      newStainType === result.stainType ? result.stainConfidence : -1,
   };
 }

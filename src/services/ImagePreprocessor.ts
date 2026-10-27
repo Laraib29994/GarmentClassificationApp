@@ -3,17 +3,19 @@ import { ImageManipulator, SaveFormat } from "expo-image-manipulator";
 import * as jpeg from "jpeg-js";
 import * as ort from "onnxruntime-react-native";
 
-const IMAGE_SIZE = 416;
+const GARMENT_IMAGE_SIZE = 416;
+const STAIN_IMAGE_SIZE = 512;
 
-export async function preprocessGarmentImage(
+async function preprocessImage(
   imageUri: string,
+  imageSize: number,
 ): Promise<ort.Tensor> {
-  // RESIZES THE GARMENT IMAGE
+  // RESIZES THE IMAGE
   const context = ImageManipulator.manipulate(imageUri);
 
   context.resize({
-    width: IMAGE_SIZE,
-    height: IMAGE_SIZE,
+    width: imageSize,
+    height: imageSize,
   });
 
   const image = await context.renderAsync();
@@ -32,13 +34,13 @@ export async function preprocessGarmentImage(
     formatAsRGBA: true,
   });
 
-  if (decoded.width !== IMAGE_SIZE || decoded.height !== IMAGE_SIZE) {
-    throw new Error("Unexpected garment image dimensions");
+  if (decoded.width !== imageSize || decoded.height !== imageSize) {
+    throw new Error("Unexpected image dimensions");
   }
 
   // CONVERTS RGBA PIXELS TO RGB CHANNEL-FIRST FORMAT
   const pixels = decoded.data;
-  const channelSize = IMAGE_SIZE * IMAGE_SIZE;
+  const channelSize = imageSize * imageSize;
   const tensorData = new Float32Array(3 * channelSize);
 
   for (let i = 0; i < channelSize; i++) {
@@ -50,14 +52,27 @@ export async function preprocessGarmentImage(
   }
 
   // CREATES THE ONNX INPUT TENSOR
-  const tensor = new ort.Tensor("float32", tensorData, [
-    1,
-    3,
-    IMAGE_SIZE,
-    IMAGE_SIZE,
-  ]);
+  return new ort.Tensor("float32", tensorData, [1, 3, imageSize, imageSize]);
+}
+
+export async function preprocessGarmentImage(
+  imageUri: string,
+): Promise<ort.Tensor> {
+  // PREPROCESSES THE GARMENT IMAGE
+  const tensor = await preprocessImage(imageUri, GARMENT_IMAGE_SIZE);
 
   console.log("Garment tensor created:", tensor.dims);
+
+  return tensor;
+}
+
+export async function preprocessStainImage(
+  imageUri: string,
+): Promise<ort.Tensor> {
+  // PREPROCESSES THE STAIN IMAGE
+  const tensor = await preprocessImage(imageUri, STAIN_IMAGE_SIZE);
+
+  console.log("Stain tensor created:", tensor.dims);
 
   return tensor;
 }

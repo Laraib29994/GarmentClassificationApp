@@ -8,7 +8,15 @@ export default function RootLayout() {
         screenOptions={{
           headerShown: false,
         }}
-      />
+      >
+        <Stack.Screen name="index" />
+        <Stack.Screen name="home" />
+        <Stack.Screen name="analyse" />
+        <Stack.Screen name="fabric" />
+        <Stack.Screen name="confirmation" />
+        <Stack.Screen name="correction" />
+        <Stack.Screen name="result" />
+      </Stack>
     </AnalysisProvider>
   );
 }

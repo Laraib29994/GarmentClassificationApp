@@ -17,6 +17,6 @@ export function getRecommendation(
     cleaningMethod: fabricRule.cleaningMethod,
     treatment: stainRule.treatment,
     recommendation: "Recommended",
-    explanation: `${fabricRule.explanation} ${stainRule.explanation}`,
+    explanation: stainRule.explanation,
   };
 }

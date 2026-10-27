@@ -1,7 +1,6 @@
 import { createContext, ReactNode, useContext, useState } from "react";
 
-import { ClassificationResult } from "../models/ClassificationResult.ts";
-
+import type { ClassificationResult } from "../models/ClassificationResult";
 type AnalysisContextType = {
   garmentImage: string | null;
   stainImage: string | null;

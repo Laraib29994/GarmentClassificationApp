@@ -153,11 +153,11 @@ android {
 }
 
 dependencies {
+    // LINKS THE ONNX RUNTIME ANDROID MODULE
+    implementation project(':onnxruntime-react-native')
+    
     // The version of react-native is set by the React Native Gradle Plugin
     implementation("com.facebook.react:react-android")
-
-    // ONNX Runtime native dependency
-    implementation project(':onnxruntime-react-native')
 
     def isGifEnabled = (findProperty('expo.gif.enabled') ?: "") == "true";
     def isWebpEnabled = (findProperty('expo.webp.enabled') ?: "") == "true";

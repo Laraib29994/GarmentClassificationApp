@@ -1,3 +1,4 @@
+
 package com.anonymous.GarmentClassificationApp
 
 import android.app.Application
@@ -23,8 +24,10 @@ class MainApplication : Application(), ReactApplication {
       context = applicationContext,
       packageList =
         PackageList(this).packages.apply {
-          // Manually register ONNX Runtime
-         add(OnnxruntimePackage())
+          // REGISTERS ONNX RUNTIME IF AUTOLINKING DOES NOT INCLUDE IT
+          if (none { it.javaClass == OnnxruntimePackage::class.java }) {
+            add(OnnxruntimePackage())
+          }
         }
     )
   }

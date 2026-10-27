@@ -15,33 +15,58 @@ type PriceData = {
 
 const prices = priceData as PriceData;
 
+// MAPS GARMENT NAMES TO THE PRICE CATEGORIES
+const GARMENT_ALIASES: Record<string, string[]> = {
+  Shirt: ["Shirt", "Shirts", "Top"],
+  Jacket: ["Jacket", "Jackets", "Coat"],
+  Dress: ["Dress", "Dresses"],
+  Trousers: ["Trousers", "Trouser", "Pants"],
+};
+
 export function getEstimatedPrice(
   garmentType: string,
   fabric: string,
 ): PriceResult | null {
-  const garmentPrices = prices.garments[garmentType];
+  // FINDS THE MATCHING GARMENT PRICE CATEGORY
+  const garmentName = garmentType.trim().toLowerCase();
 
-  if (!garmentPrices) {
+  const aliases = Object.entries(GARMENT_ALIASES).find(([, names]) =>
+    names.some((name) => name.toLowerCase() === garmentName),
+  )?.[1] ?? [garmentType];
+
+  const matchingKey = Object.keys(prices.garments).find((key) =>
+    aliases.some((name) => name.toLowerCase() === key.toLowerCase()),
+  );
+
+  if (!matchingKey) {
     return null;
   }
 
-  const fabricPrice = garmentPrices[fabric];
+  const garmentPrices = prices.garments[matchingKey];
 
-  if (fabricPrice !== undefined) {
+  // CHECKS FOR A FABRIC-SPECIFIC PRICE
+  const fabricKey = Object.keys(garmentPrices).find(
+    (key) => key.toLowerCase() === fabric.trim().toLowerCase(),
+  );
+
+  if (fabricKey !== undefined) {
     return {
-      price: fabricPrice,
+      price: garmentPrices[fabricKey],
       isFabricSpecific: true,
     };
   }
 
-  const standardPrice = garmentPrices.STANDARD;
+  // USES THE STANDARD PRICE WHEN NO FABRIC PRICE EXISTS
+  const standardKey = Object.keys(garmentPrices).find(
+    (key) => key.toUpperCase() === "STANDARD",
+  );
 
-  if (standardPrice === undefined) {
+  if (standardKey === undefined) {
     return null;
   }
 
   return {
-    price: standardPrice,
+    price: garmentPrices[standardKey],
     isFabricSpecific: false,
   };
 }
