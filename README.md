@@ -18,6 +18,8 @@ The application allows users to capture garment and stain images, select a fabri
 
 The easiest way to run the application is to install the provided APK file on an **Android device**.
 
+https://github.com/Laraib29994/GarmentClassificationApp/releases/tag/MobileDevelopment
+
 1. Download the APK file provided with the project.
 2. Open the downloaded APK file on your Android phone.
 3. Allow installation from this source if prompted.
