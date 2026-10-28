@@ -1,45 +1,58 @@
 # Mobile Garment & Stain Classification System
 
-A mobile application prototype developed for Maxwells Drycleaning using React Native, Expo and TypeScript.
+A mobile application prototype developed for **Maxwells Drycleaning** using React Native, Expo and TypeScript.
 
-## Requirements
+The application allows users to capture garment and stain images, select a fabric type, and view classification results, cleaning recommendations and estimated dry-cleaning prices.
 
-Before running the project, make sure the following are installed:
+## Features
+
+- Capture or upload garment and stain images.
+- Select the garment's fabric type.
+- View garment and stain classification results.
+- Receive cleaning recommendations.
+- Check whether professional dry-cleaning is recommended.
+- View estimated cleaning prices.
+- Reset and start a new analysis.
+
+## Option 1: Install the APK (Recommended)
+
+The easiest way to run the application is to install the provided APK file on an **Android device**.
+
+1. Download the APK file provided with the project.
+2. Open the downloaded APK file on your Android phone.
+3. Allow installation from this source if prompted.
+4. Install and open the application.
+
+**Note:** The APK is for Android devices only. No coding software or additional setup is required.
+
+## Option 2: Run the Source Code
+
+### Requirements
 
 - [Node.js](https://nodejs.org/)
 - [Visual Studio Code](https://code.visualstudio.com/)
-- [Expo Go](https://expo.dev/go) on an Android or iOS device
-- [Git](https://git-scm.com/) (for cloning the repository)
-
-## How to Run the Project
+- [Expo Go](https://expo.dev/go)
+- [Git](https://git-scm.com/) (optional)
 
 ### Step 1: Download the Project
 
-Clone the GitHub repository using the following command:
+Clone the repository:
 
 ```bash
 git clone https://github.com/Laraib29994/GarmentClassificationApp.git
 ```
 
-Alternatively, open the [GitHub repository](https://github.com/Laraib29994/GarmentClassificationApp) and select Code -> Download ZIP, then extract the folder.
+Alternatively, download the ZIP file from the [GitHub repository](https://github.com/Laraib29994/GarmentClassificationApp) and extract it.
 
-### Step 2: Open in VS Code
+### Step 2: Install Dependencies
 
-Open the downloaded `GarmentClassificationApp` folder in Visual Studio Code.
-
-Open a terminal using Terminal → New Terminal.
-
-### Step 3: Install Dependencies
-
-Run the following command:
+Open the project folder in Visual Studio Code, open a terminal and run:
 
 ```bash
 npm install
 ```
 
-This installs the required project dependencies.
-
-### Step 4: Start the Application
+### Step 3: Start the Application
 
 Run:
 
@@ -47,29 +60,41 @@ Run:
 npx expo start
 ```
 
-A QR code will appear in the terminal.
+Scan the QR code using Expo Go on your mobile device.
 
-### Step 5: Run on a Mobile Device
+Ensure your phone and computer are connected to the same Wi-Fi network.
 
-1. Install and open Expo Go on your phone.
-2. Connect your phone and computer to the same Wi-Fi network.
-3. Scan the QR code displayed in the terminal.
-4. Wait for the application to load.
-
-If the connection fails, try:
+If the connection fails, run:
 
 ```bash
 npx expo start --tunnel
 ```
 
+**Note:** Running through Expo Go requires compatible project dependencies. A development build may be necessary for unsupported native modules.
+
 ## Running Tests
 
-To run the Jest unit tests, execute:
+To run the Jest unit tests:
 
 ```bash
 npm test
 ```
 
-## Note
+## Technologies Used
 
-The current application uses mock garment and stain classifications. A machine-learning model has not yet been integrated.
+- React Native
+- Expo
+- TypeScript
+- Expo Router
+- React Context API
+- Jest
+
+## Current Limitations
+
+The current prototype uses mock garment and stain classification results. A trained machine-learning model has not yet been integrated.
+
+Cleaning recommendations are rule-based, and displayed prices are estimates.
+
+## GitHub Repository
+
+https://github.com/Laraib29994/GarmentClassificationApp
